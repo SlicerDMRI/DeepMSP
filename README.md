@@ -70,6 +70,8 @@ Each row contains a subject ID followed by a variety of DWI measures for each cl
 
 #### S1200_demographics_Behavioral.csv
 
+This file is a behavioral data file available in the ["WU-Minn HCP Data - 1200 Subjects" dataset](https://www.humanconnectome.org/study/hcp-young-adult/document/1200-subjects-data-release).
+
 Each row contains a set of functional/behavioral measures for the corresponding subject. If you are using functional/behavioral measures that are not used by the HCP-YA dataset, you may need to alter the names of the headers in the generate_csvs.py file to match your dataset's headers.
 
 | Subject | PicVocab_AgeAdj | ReadEng_AgeAdj | ... |
