@@ -41,7 +41,7 @@ python train_multi.py --batch_size 10 --epochs 50 --learning_rate 1e-4 --input_c
 After training, perform parcellation by running explain_multi.py with your desired arguments, for example:
 
 ```bash
-python explain_multi.py --save_name clustering_results --results_name cerebellum_optimised_transformer --bilateral
+python explain_multi.py --save_name clustering_results --results_name cerebellum_optimised_transformer --model transformer --bilateral
 ```
 
 ### File Structure Details/Examples
