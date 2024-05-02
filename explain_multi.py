@@ -551,6 +551,80 @@ class TransformerBlock(nn.Module):
         
         return x
 
+class FC(nn.Module):
+    def __init__(self, input_channels=1, num_classes=1, dropout=90):
+        super(FC, self).__init__()
+        
+        self.decoder = nn.Sequential(
+            nn.Linear(input_channels, 4096),
+            nn.ReLU(),
+            nn.Dropout(dropout/100),
+
+            nn.Linear(4096, 2048),
+            nn.ReLU(),
+            nn.Dropout(dropout/100),
+
+            nn.Linear(2048, 1024),
+            nn.ReLU(),
+            nn.Dropout(dropout/100),
+
+            nn.Linear(1024, 512),
+            nn.ReLU(),
+            nn.Dropout(dropout/100),
+
+            nn.Linear(512, 256),
+            nn.ReLU(),
+            nn.Dropout(dropout/100),
+
+            nn.Linear(256, 128),
+            nn.ReLU(),
+            nn.Dropout(dropout/100),
+
+            nn.Linear(128, num_classes),
+        )
+
+    def forward(self, x):
+        x = self.decoder(x)
+
+        return x
+
+
+class CNN(nn.Module):
+    def __init__(self, input_channels=1, num_classes=1, dropout=90):
+        super(CNN, self).__init__()
+        
+        self.encoder = nn.Sequential(
+            nn.Conv1d(in_channels=1, out_channels=16, kernel_size=5, stride=1, padding=2),
+            nn.ReLU(),
+            nn.Dropout(dropout/100),
+            nn.Conv1d(in_channels=16, out_channels=32, kernel_size=5, stride=1, padding=2),
+            nn.ReLU(),
+            nn.Dropout(dropout/100),
+            nn.Conv1d(in_channels=32, out_channels=64, kernel_size=5, stride=1, padding=2),
+            nn.ReLU(),
+            nn.Dropout(dropout/100),
+            nn.Conv1d(in_channels=64, out_channels=100, kernel_size=5, stride=1, padding=2),
+        )
+        
+        self.decoder = nn.Sequential(
+            nn.Linear(100 * input_channels, 100),
+            nn.Dropout(dropout/100),
+            nn.Linear(100, 64),
+            nn.Dropout(dropout/100),
+            nn.Linear(64, num_classes),
+        )
+
+    def forward(self, x):
+        # Input shape: batch_size x 500
+        # Reshape for 1D-CNN: batch_size x 1 x 500
+        x = x.unsqueeze(1)
+
+        x = self.encoder(x)
+        x = x.view(x.size(0), -1) # flatten
+        x = self.decoder(x)
+        
+        return x
+
 class TransformerModel(nn.Module):
     def __init__(self, input_channels=1940, num_classes=1, dropout=90, d_model=512, nhead=8, num_layers=6,dim_feedforward=2048):
         super(TransformerModel, self).__init__()
@@ -1153,6 +1227,7 @@ parser.add_argument("-r", "--results_name", help="The name of the model to load.
 parser.add_argument("-b", "--bilateral", help="Presence of this flag enables bilateral clustering.", action='store_true')
 parser.add_argument("-w", "--whitening", help="Presence of this flag enables whitening of data before clustering.", action='store_true')
 parser.add_argument("-l", "--load", help="Presence of flag will load saliencies from 'all_saliencies.npy', 'tract_names.json', 'cluster_names.json' instead of calculating them", action='store_true')
+parser.add_argument("-m", "--model", help="Indicates which model to use (transformer, 1dcnn, fc).", type=str, default="transformer")
 args = parser.parse_args()
 
 OUTPUT_BASE = args.save_name
@@ -1200,7 +1275,16 @@ else:
 
         # Load the model 
         checkpoint = torch.load('./results/'+RESULTS_NAME+'/fold_'+str(fold)+'_best_model_checkpoint.pth')
-        model = TransformerModel(input_channels=input_channels, dropout=0)
+        if args.model == 'transformer':
+            model = TransformerModel(input_channels=input_channels, dropout=0)
+        elif args.model == '1dcnn':
+            model = CNN(input_channels=input_channels, dropout=0, num_classes=11)
+        elif args.model == 'fc':
+            model = FC(input_channels=input_channels, dropout=0, num_classes=11)
+        else:
+            print('Error: Invalid model.')
+            sys.exit()
+
         model.to(device)
         model.load_state_dict(checkpoint['model_state_dict'])
         model.eval()
