@@ -4,7 +4,7 @@
 
 Official code associated with the following publication:
 
-A. Tchetchenian, L. Zekelman, Y. Chen, J. Rushmore, F. Zhang, E.H. Yeterian, N. Makris, Y. Rathi, E. Meijering, Y. Song, L.J. O'Donnell. (2024). "Deep multimodal saliency parcellation of cerebellar pathways: linking microstructure and individual function through explainable multitask learning", Human Brain Mapping. https://doi.org/10.1002/hbm.70008
+Ari Tchetchenian, Leo Zekelman, Yuqian Chen, Jarrett Rushmore, Fan Zhang, Edward H. Yeterian, Nikos Makris, Yogesh Rathi, Erik Meijering, Yang Song, Lauren J. O'Donnell. (2024). "Deep multimodal saliency parcellation of cerebellar pathways: linking microstructure and individual function through explainable multitask learning", Human Brain Mapping. https://doi.org/10.1002/hbm.70008
 
 ### Setup
 
